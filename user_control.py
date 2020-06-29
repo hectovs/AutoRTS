@@ -8,7 +8,7 @@ import rtsfuncs
 
 email = 'YOUR_EMAIL' #RTS email
 password = 'YOUR_PASSWORD' #RTS password 
-ls_csv_name = ['rtsday1.csv'] #csv files to create workouts
+ls_csv_name = ['rtsday1.csv'] #csv filenames eg: ['rtsday1.csv', 'rtsday2.csv',...]
 save_status = True #just use true 
 num_micros = 2 #number of weeks
 driver = 'chromedriver' #browser driver to use
