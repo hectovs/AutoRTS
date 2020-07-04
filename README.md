@@ -9,9 +9,9 @@ You'll need Python3 and chrome installed.
   Set up  virtual environment in this folder on your system (NB. this will be different on a windows OS)
   
   1. Open terminal 
-  2. Create your virtual environemnt, type into terminal: '''python3 -m venv venv''' 
-  3. then activate the virtual environment, type: '''. venv/bin/activate'''
-  4. Install the requirements, type: '''pip install -r requirements.txt'''
+  2. Create your virtual environemnt, type into terminal: `python3 -m venv venv` 
+  3. then activate the virtual environment, type: `. venv/bin/activate`
+  4. Install the requirements, type: `pip install -r requirements.txt`
   
   You will only need to perform step 2 once for each iteration of this code on your system
   Step 3 will need to be repeated everytime you open a new terminal window in situ          
@@ -21,7 +21,7 @@ You'll need Python3 and chrome installed.
 
   Then open the user_control.py file and edit it to suit your requirements 
 
-  Then run user_control.py (type into terminal: '''python3 user_control.py''')
+  Then run user_control.py (type into terminal: `python3 user_control.py`)
 
   Report problems and issues and I'll do my best to fix them. 
 
