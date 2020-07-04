@@ -4,9 +4,13 @@ import pandas as pd
 import time
 from datetime import datetime,date,timedelta
 
-def login(email, password, driver):
+def initialise_se(driver):
+    global chrome_browser 
     chrome_browser = webdriver.Chrome(f'./{driver}')
     chrome_browser.maximize_window()
+
+def login(email, password):
+
     chrome_browser.get('https://www.reactivetrainingsystems.com/Authentication/LoginPage') 
     
     user_email = chrome_browser.find_element_by_id("Username")
@@ -22,7 +26,7 @@ def login(email, password, driver):
     return chrome_browser
 
 
-def create_workout(w_date, ls_exercises, chrome_browser):
+def create_workout(w_date, ls_exercises):
     chrome_browser.get(f'https://www.reactivetrainingsystems.com/Traininglog/AddWorkout?StartDate={w_date}')
     
     for ex_name in ls_exercises:
@@ -34,7 +38,7 @@ def create_workout(w_date, ls_exercises, chrome_browser):
     cont.click() #click to create workout
 
 
-def fill_workout(exer_num_ls, num_sets, weight_ls, rep_ls, rpe_ls, chrome_browser):
+def fill_workout(exer_num_ls, num_sets, weight_ls, rep_ls, rpe_ls):
     
     set_num = chrome_browser.find_element_by_css_selector('#IExerciseList > li:nth-child(1) > div.IRow > div.IInlineContainer > span > input')
     set_num.send_keys(num_sets) #input number of sets
@@ -53,14 +57,14 @@ def fill_workout(exer_num_ls, num_sets, weight_ls, rep_ls, rpe_ls, chrome_browse
     fill_rpe.send_keys(rpe_ls)
 
 
-def open_mods(id, chrome_browser):
+def open_mods(id):
     #open modifier window
     open_mod = chrome_browser.find_element_by_css_selector(f'#IExerciseList > li:nth-child({id}) > div.IRow > div.ActionExp > div:nth-child(4) > a > img')    
     open_mod.click()
     time.sleep(0.5)
 
 
-def add_mods(mod_type, mod_name,chrome_browser):
+def add_mods(mod_type, mod_name):
 
     #kit 
     mod_type_ele = chrome_browser.find_element_by_css_selector('#ModTabs > div:nth-child(4)')
@@ -70,7 +74,7 @@ def add_mods(mod_type, mod_name,chrome_browser):
     mod_name_ele = chrome_browser.find_element_by_xpath(f"//*[text()='{mod_name}']")
     mod_name_ele.click()
 
-def add_mods2(mod_name_ls, chrome_browser):
+def add_mods2(mod_name_ls):
 
     for i in range(7):
         n=i+1
@@ -87,7 +91,7 @@ def add_mods2(mod_name_ls, chrome_browser):
                 time.sleep(0.15)
                 continue
             except NoSuchElementException:
-                print('that modifier does not exist')
+                print(f'that modifier {mod_name}  does not exist')
                 break
     
     save_ele = chrome_browser.find_element_by_css_selector('#ApplyExBut')
@@ -135,14 +139,14 @@ def extract_vars(csv_name):
     # print(num_sets_ls, exer_num_ls, w_date, ls_exercises, ls_mods_ls, ls_weights_ls, ls_reps_ls, ls_rpe_ls)
     return num_sets_ls, exer_num_ls, w_date, ls_exercises, ls_mods_ls, ls_weights_ls, ls_reps_ls, ls_rpe_ls 
     
-def fill_workout2(exer_num_ls, num_sets_ls, ls_weights_ls, ls_reps_ls, ls_rpe_ls, ls_mods_ls, ls_exercises, chrome_browser):
+def fill_workout2(exer_num_ls, num_sets_ls, ls_weights_ls, ls_reps_ls, ls_rpe_ls, ls_mods_ls, ls_exercises):
     #two for loops one for exercises one for sets 
     for num in range(len(ls_exercises)):
         
         m = num+1
 
-        open_mods(m, chrome_browser)
-        add_mods2(ls_mods_ls[num], chrome_browser)
+        open_mods(m)
+        add_mods2(ls_mods_ls[num])
         
         set_num = chrome_browser.find_element_by_css_selector(f'#IExerciseList > li:nth-child({m}) > div.IRow > div.IInlineContainer > span > input')
         set_num.send_keys(num_sets_ls[num])
@@ -165,7 +169,7 @@ def fill_workout2(exer_num_ls, num_sets_ls, ls_weights_ls, ls_reps_ls, ls_rpe_ls
             rpe = ls_reps_ls[num][i]
             fill_rpe.send_keys(rpe)
 
-def save_workout(option, chrome_browser):
+def save_workout(option):
     save = chrome_browser.find_element_by_css_selector('#SaveWorkout')
     if option:
         save.click()
@@ -177,23 +181,24 @@ def save_workout(option, chrome_browser):
 
    
 
-def complete_workout(email,password,csv_name,save_status, driver):
+def complete_workout(email,password,csv_name,save_status):
 
-    chrome_browser = login(email, password, driver)
+    login(email, password)
 
     num_sets_ls, exer_num_ls, w_date, ls_exercises, ls_mods_ls, ls_weights_ls, ls_reps_ls, ls_rpe_ls = extract_vars(f'{csv_name}')
             
-    create_workout(w_date,ls_exercises, chrome_browser)
+    create_workout(w_date,ls_exercises)
     time.sleep(1)
 
-    fill_workout2(exer_num_ls, num_sets_ls, ls_weights_ls, ls_reps_ls, ls_rpe_ls, ls_mods_ls, ls_exercises, chrome_browser)
-    save_workout(save_status,chrome_browser)
+    fill_workout2(exer_num_ls, num_sets_ls, ls_weights_ls, ls_reps_ls, ls_rpe_ls, ls_mods_ls, ls_exercises)
+    save_workout(save_status)
 
 
 def complete_macro(email,password,ls_csv_name,save_status, num_micros, driver):
 
     ls_w_date = []  
-    chrome_browser = login(email, password,driver)
+    initialise_se(driver)
+    login(email, password)
 
     for csv_name in ls_csv_name:
         
@@ -212,11 +217,11 @@ def complete_macro(email,password,ls_csv_name,save_status, num_micros, driver):
 
         for date in ls_w_date: 
             print(date)        
-            create_workout(date,ls_exercises,chrome_browser)
+            create_workout(date,ls_exercises)
             time.sleep(1)
 
-            fill_workout2(exer_num_ls, num_sets_ls, ls_weights_ls, ls_reps_ls, ls_rpe_ls, ls_mods_ls, ls_exercises, chrome_browser)
-            save_workout(save_status,chrome_browser)
+            fill_workout2(exer_num_ls, num_sets_ls, ls_weights_ls, ls_reps_ls, ls_rpe_ls, ls_mods_ls, ls_exercises)
+            save_workout(save_status)
             time.sleep(2)
 
         time.sleep(30)
