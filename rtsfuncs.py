@@ -1,5 +1,8 @@
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException,ElementNotInteractableException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 import time
 from datetime import datetime,date,timedelta
@@ -13,15 +16,15 @@ def login(email, password):
 
     chrome_browser.get('https://www.reactivetrainingsystems.com/Authentication/LoginPage') 
     
-    user_email = chrome_browser.find_element_by_id("Username")
+    user_email = WebDriverWait(chrome_browser,10, poll_frequency=0.25).until(EC.presence_of_element_located((By.ID,("Username"))))
     user_email.clear()
     user_email.send_keys(f'{email}')
     
-    user_pass = chrome_browser.find_element_by_id("Password")
+    user_pass = WebDriverWait(chrome_browser,10, poll_frequency=0.25).until(EC.presence_of_element_located((By.ID,("Password"))))
     user_pass.clear()
     user_pass.send_keys(f'{password}')
     
-    submit_button = chrome_browser.find_element_by_css_selector('#LoginForm2 > div.pull-right > button.btn.btn-default')
+    submit_button = WebDriverWait(chrome_browser,10, poll_frequency=0.25).until(EC.presence_of_element_located((By.CSS_SELECTOR,('#LoginForm2 > div.pull-right > button.btn.btn-default'))))   
     submit_button.click()
     return chrome_browser
 
@@ -30,48 +33,49 @@ def create_workout(w_date, ls_exercises):
     chrome_browser.get(f'https://www.reactivetrainingsystems.com/Traininglog/AddWorkout?StartDate={w_date}')
     
     for ex_name in ls_exercises:
-        exercise = chrome_browser.find_element_by_xpath(f"//*[text()='{ex_name}']")
+        exercise = WebDriverWait(chrome_browser,10, poll_frequency=0.50).until(EC.element_to_be_clickable((By.XPATH,(f"//*[text()='{ex_name}']"))))
         exercise.click()
         time.sleep(0.25)
-
-    cont = chrome_browser.find_element_by_id('TlContinue')
+        
+    time.sleep(0.25)
+    cont = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.element_to_be_clickable((By.ID,('TlContinue'))))
     cont.click() #click to create workout
 
 
 def fill_workout(exer_num_ls, num_sets, weight_ls, rep_ls, rpe_ls):
     
-    set_num = chrome_browser.find_element_by_css_selector('#IExerciseList > li:nth-child(1) > div.IRow > div.IInlineContainer > span > input')
+    set_num = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.CSS_SELECTOR,('#IExerciseList > li:nth-child(1) > div.IRow > div.IInlineContainer > span > input'))))
     set_num.send_keys(num_sets) #input number of sets
 
-    expand = chrome_browser.find_element_by_id("AutoSaveHeader")
+    expand = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.ID,("AutoSaveHeader"))))
     expand.click() #click outside are to reveal forms
     time.sleep(1)
 
-    fill_weights = chrome_browser.find_element_by_css_selector('#IExerciseList > li:nth-child(1) > div.IExpandable > div:nth-child(2) > div.Actual > span:nth-child(1) > input')
+    fill_weights = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.CSS_SELECTOR, ('#IExerciseList > li:nth-child(1) > div.IExpandable > div:nth-child(2) > div.Actual > span:nth-child(1) > input'))))
     fill_weights.send_keys(weight_ls)
 
-    fill_reps = chrome_browser.find_element_by_css_selector('#IExerciseList > li:nth-child(1) > div.IExpandable > div:nth-child(2) > div.Actual > span:nth-child(4) > input')
+    fill_reps = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.CSS_SELECTOR,('#IExerciseList > li:nth-child(1) > div.IExpandable > div:nth-child(2) > div.Actual > span:nth-child(4) > input'))))
     fill_reps.send_keys(rep_ls)
 
-    fill_rpe = chrome_browser.find_element_by_css_selector('#IExerciseList > li:nth-child(1) > div.IExpandable > div:nth-child(2) > div.Actual > span:nth-child(6) > input')
+    fill_rpe =WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.CSS_SELECTOR,('#IExerciseList > li:nth-child(1) > div.IExpandable > div:nth-child(2) > div.Actual > span:nth-child(6) > input'))))
     fill_rpe.send_keys(rpe_ls)
 
 
 def open_mods(id):
     #open modifier window
-    open_mod = chrome_browser.find_element_by_css_selector(f'#IExerciseList > li:nth-child({id}) > div.IRow > div.ActionExp > div:nth-child(4) > a > img')    
+    open_mod = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.CSS_SELECTOR, (f'#IExerciseList > li:nth-child({id}) > div.IRow > div.ActionExp > div:nth-child(4) > a > img'))))    
     open_mod.click()
-    time.sleep(0.5)
+    
 
 
 def add_mods(mod_type, mod_name):
 
     #kit 
-    mod_type_ele = chrome_browser.find_element_by_css_selector('#ModTabs > div:nth-child(4)')
+    mod_type_ele = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.CSS_SELECTOR, ('#ModTabs > div:nth-child(4)'))))
     mod_type_ele.click()
     
     time.sleep(1)
-    mod_name_ele = chrome_browser.find_element_by_xpath(f"//*[text()='{mod_name}']")
+    mod_name_ele = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.XPATH,(f"//*[text()='{mod_name}']"))))
     mod_name_ele.click()
 
 def add_mods2(mod_name_ls):
@@ -79,7 +83,7 @@ def add_mods2(mod_name_ls):
     for i in range(7):
         n=i+1
         n=str(n)
-        mod_type_ele = chrome_browser.find_element_by_css_selector(f'#ModTabs > div:nth-child({n})')
+        mod_type_ele = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.CSS_SELECTOR,(f'#ModTabs > div:nth-child({n})'))))
         mod_type_ele.click()
         time.sleep(0.15)
         for mod_name in mod_name_ls:
@@ -91,10 +95,10 @@ def add_mods2(mod_name_ls):
                 time.sleep(0.15)
                 continue
             except NoSuchElementException:
-                print(f'that modifier {mod_name}  does not exist')
+                print(f'that modifier {mod_name} does not exist')
                 break
     
-    save_ele = chrome_browser.find_element_by_css_selector('#ApplyExBut')
+    save_ele = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.CSS_SELECTOR,('#ApplyExBut'))))
     save_ele.click()
 
 
@@ -148,29 +152,29 @@ def fill_workout2(exer_num_ls, num_sets_ls, ls_weights_ls, ls_reps_ls, ls_rpe_ls
         open_mods(m)
         add_mods2(ls_mods_ls[num])
         
-        set_num = chrome_browser.find_element_by_css_selector(f'#IExerciseList > li:nth-child({m}) > div.IRow > div.IInlineContainer > span > input')
+        set_num = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.CSS_SELECTOR,(f'#IExerciseList > li:nth-child({m}) > div.IRow > div.IInlineContainer > span > input'))))
         set_num.send_keys(num_sets_ls[num])
 
-        expand = chrome_browser.find_element_by_id("AutoSaveHeader")
+        expand = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.ID,("AutoSaveHeader"))))
         expand.click()
-        time.sleep(0.75)
+        
 
         for i in range(len(ls_weights_ls[num])):
             n=i+2
-            fill_weights = chrome_browser.find_element_by_css_selector(f'#IExerciseList > li:nth-child({m}) > div.IExpandable > div:nth-child({n}) > div.Actual > span:nth-child(1) > input')
+            fill_weights = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.CSS_SELECTOR,(f'#IExerciseList > li:nth-child({m}) > div.IExpandable > div:nth-child({n}) > div.Actual > span:nth-child(1) > input'))))
             weights = ls_weights_ls[num][i]
             fill_weights.send_keys(weights)
 
-            fill_reps = chrome_browser.find_element_by_css_selector(f'#IExerciseList > li:nth-child({m}) > div.IExpandable > div:nth-child({n}) > div.Actual > span:nth-child(4) > input')
+            fill_reps = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.CSS_SELECTOR,(f'#IExerciseList > li:nth-child({m}) > div.IExpandable > div:nth-child({n}) > div.Actual > span:nth-child(4) > input'))))
             reps = ls_reps_ls[num][i]
             fill_reps.send_keys(reps)
 
-            fill_rpe = chrome_browser.find_element_by_css_selector(f'#IExerciseList > li:nth-child({m}) > div.IExpandable > div:nth-child({n}) > div.Actual > span:nth-child(6) > input')
+            fill_rpe = WebDriverWait(chrome_browser,10, poll_frequency=0.20).until(EC.presence_of_element_located((By.CSS_SELECTOR,(f'#IExerciseList > li:nth-child({m}) > div.IExpandable > div:nth-child({n}) > div.Actual > span:nth-child(6) > input'))))
             rpe = ls_reps_ls[num][i]
             fill_rpe.send_keys(rpe)
 
 def save_workout(option):
-    save = chrome_browser.find_element_by_css_selector('#SaveWorkout')
+    save = WebDriverWait(chrome_browser,10, poll_frequency=0.2).until(EC.presence_of_element_located((By.CSS_SELECTOR,('#SaveWorkout'))))
     if option:
         save.click()
         print('The workout was saved')
@@ -225,6 +229,5 @@ def complete_macro(email,password,ls_csv_name,save_status, num_micros, driver):
             time.sleep(2)
 
         time.sleep(30)
-
 
 
